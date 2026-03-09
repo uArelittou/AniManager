@@ -13,7 +13,7 @@ def scan_file(file):
     for root, dirs, files in os.walk(file):        #遍历指定目录及其子目录中的所有文件，返回当前目录路径、子目录和文件名称
         folder_name = os.path.basename(root)            #获取当前目录的名称
 
-        animename = name_convert(folder_name)                #调用上面的函数动画名称转换，获取干净的动画文件夹名称
+        aniname = name_convert(folder_name)                #调用上面的函数动画名称转换，获取干净的动画文件夹名称
 
         for f in files:                            #遍历每个文件
             if f.lower().endswith(video_types):    #检查文件是否是视频文件
@@ -22,10 +22,10 @@ def scan_file(file):
               info = file_info(file_path)          #调用上面的函数文件信息
 
               if info :
-                  if animename not in anime_data:    #如果当前目录名称不在对应字典中，则添加一个新的键值对
+                  if aniname not in anime_data:    #如果当前目录名称不在对应字典中，则添加一个新的键值对
 
                     try:
-                        api_data = bangumi_api.bgm_api(animename)     #调用bangumi_api获取动画信息,用个变量存储
+                        api_data = bangumi_api.bgm_api(aniname)     #调用bangumi_api获取动画信息,用个变量存储
 
                     except TypeError:              #用try来增加容错
                         api_data = None
@@ -35,16 +35,16 @@ def scan_file(file):
                         cover_url = api_data['cover_url']          #获取封面URL
 
                     else:  #如果没有成功获取到动画信息，则使用目录名称作为动画名称
-                        official_name = animename
+                        official_name = aniname
                         cover_url = ""
 
-                    anime_data[animename] ={                       #创造对应的键值对
+                    anime_data[aniname] ={                       #创造对应的键值对
                         'official_name': official_name,
                         'cover_url': cover_url,
                         'videos': []
                     }
                 
-                  anime_data[animename]['videos'].append(info)   #把单个的视频文件加入到视频列表中
+                  anime_data[aniname]['videos'].append(info)   #把单个的视频文件加入到视频列表中
        
 
 
@@ -117,7 +117,7 @@ def aftersplit(name):
 
 
 userpath = os.path.expanduser('~')     #获取User目录路径
-Amg_path = os.path.join(userpath, 'AppData', 'Roaming', 'Animenanger')  #存储数据的目录路径
+Amg_path = os.path.join(userpath, 'AppData', 'Roaming', 'Animananger')  #存储数据的目录路径
 if not os.path.exists(Amg_path):   #如果目录不存在，则创建目录
     os.makedirs(Amg_path)
 Json_path = os.path.join(Amg_path, 'anime_data.json')    #拼接json文件的路径 （exe版本）
