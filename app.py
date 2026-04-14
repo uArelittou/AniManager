@@ -34,6 +34,23 @@ def index():
 # 数据 API 接口
 # ==========================================
 
+
+@app.route('/api/delete', methods=['POST'])
+def delete_anime():
+    """删除指定动画的数据和文件夹"""
+    target = request.json.get('target')
+    
+    if not target:
+        return jsonify({"error": "未指定删除目标"}), 400
+    
+    success = backend.delete_data(target)
+    
+    if success:
+        return jsonify({"message": f"已把 {target} 送进回收站咯"})
+    else:
+        return jsonify({"error": "移除失败，文件可能已被移除或权限不足？"}), 400
+
+
 @app.route('/api/data', methods=['GET'])
 def get_data():
     """获取本地已解析的番剧数据字典"""
@@ -96,6 +113,15 @@ def select_folder():
             return {'status': 'cancelled', 'path': ''}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}, 500
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 if __name__ == '__main__':
     print("===================================================")
