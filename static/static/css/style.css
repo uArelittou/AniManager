@@ -1,0 +1,61 @@
+/* =========================================================
+   全局基础设定
+   ========================================================= */
+body {
+    background-color: #0d0d0d;
+    /* 利用径向渐变绘制出科技感的网点背景图层 */
+    background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #ffffff;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* =========================================================
+   组件特效
+   ========================================================= */
+
+/* 番剧海报悬浮时的 Z 轴抬升与阴影扩散动画 */
+.poster-card {
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease;
+}
+
+.poster-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+}
+
+/* =========================================================
+   系统滚动条覆写 (适配暗黑主题)
+   ========================================================= */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* =========================================================
+   Vue Transition 动画类
+   ========================================================= */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
