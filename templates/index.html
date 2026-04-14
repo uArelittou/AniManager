@@ -26,7 +26,7 @@
             <div>
                 <button @click="showImportModal = true"
                     class="text-sm font-bold tracking-wider text-white/70 hover:text-white border border-white/30 hover:border-white px-6 py-2 transition-all duration-300">
-                    [+] 导入本地文件夹
+                    [导入本地文件夹]
                 </button>
             </div>
         </header>
@@ -99,6 +99,12 @@
                             <i
                                 class="fa-solid fa-arrow-left group-hover:-translate-x-2 transition-transform duration-300"></i>
                             <span class="group-hover:text-shadow-[0_0_8px_rgba(255,255,255,0.8)]">返回</span>
+                        </button>
+
+                        <button @click="deleteAnime"
+                            class="fixed top-[100px] right-[66px] text-white/50 hover:text-white transition-all duration-300 tracking-widest text-lg font-bold flex items-center gap-2 group z-50">
+                            <i class="fa-solid fa-trash"></i>
+                            <span>移除此番剧</span>
                         </button>
                     </div>
                 </div>
@@ -180,6 +186,36 @@
                         class="mt-4 text-sm text-center">
                         {{ scanMessage }}
                     </p>
+                </div>
+            </div>
+        </transition>
+
+        <transition name="fade">
+            <div v-if="showDeleteModal"
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+                <div class="bg-[#111] border border-white/10 p-8 w-[500px] shadow-2xl relative">
+                    <button @click="showDeleteModal = false"
+                        class="absolute top-4 right-4 text-white/40 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+
+                    <h2 class="text-xl font-bold tracking-widest mb-2">确认删除</h2>
+                    <p class="text-white/40 text-sm mb-6 tracking-widest">
+                        确定要删除 <span class="text-white">{{ activeAnimeName }}</span> 吗？<br>
+                        此操作不可恢复，番剧文件夹将被移入回收站。
+                    </p>
+
+                    <div class="flex gap-3">
+                        <button @click="showDeleteModal = false"
+                            class="flex-1 bg-white/10 border border-white/30 text-white font-bold py-3 hover:bg-white/20 transition-colors">
+                            <i class="fa-solid fa-xmark mr-2"></i>取消
+                        </button>
+                        <button @click="confirmDelete" :disabled="isDeleting"
+                            class="flex-1 bg-white text-black font-bold py-3 hover:bg-white/80 transition-colors disabled:bg-white/30 disabled:cursor-not-allowed">
+                            <span v-if="isDeleting"><i class="fa-solid fa-spinner fa-spin mr-2"></i>删除中...</span>
+                            <span v-else><i class="fa-solid fa-trash mr-2"></i>确认删除</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </transition>
