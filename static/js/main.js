@@ -18,6 +18,10 @@ createApp({
         const activeAnimeInfo = ref({});
         const isSelecting = ref(false);
 
+        // 删除确认模态框状态
+        const showDeleteModal = ref(false);
+        const isDeleting = ref(false);
+
         // --- 2. 核心业务逻辑 (Methods) ---
 
         // 初始化加载数据
@@ -122,6 +126,44 @@ createApp({
             }
         };
 
+        const deleteAnime = () => {
+            showDeleteModal.value = true;
+        };
+
+        const confirmDelete = async () => {
+            isDeleting.value = true;
+            
+            try {
+                const res = await fetch('/api/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target: activeAnimeName.value })
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    alert(result.message);
+                    // Vue 3 中删除响应式对象属性的正确方法
+                    const newData = { ...animeData.value };
+                    delete newData[activeAnimeName.value];
+                    animeData.value = newData;
+                    
+                    showDeleteModal.value = false;
+                    goBack();
+                } else {
+                    alert(result.error);
+                    showDeleteModal.value = false;
+                }
+            } catch (error) {
+                console.error('删除请求失败', error);
+                alert('与服务的连接异常');
+                showDeleteModal.value = false;
+            } finally {
+                isDeleting.value = false;
+            }
+        };
+
         // --- 4. 生命周期钩子 ---
         onMounted(() => {
             loadData(); // 挂载时立即请求数据
@@ -142,7 +184,8 @@ createApp({
             showImportModal, scanPath, isScanning, scanMessage, scanSuccess,
             startScan, selectFolder, isSelecting,
             openAnime, activeAnimeName, activeAnimeInfo, goBack,
-            playVideo
+            playVideo, deleteAnime,
+            showDeleteModal, isDeleting, confirmDelete
         };
     }
 }).mount('#app');
