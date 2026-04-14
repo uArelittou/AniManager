@@ -225,4 +225,4 @@ def delete_data(target):
 #         print(f'番名: {data.get("official_name", folder_name)}')  #优先显示官方名称，如果没有就显示文件夹名称
 
 #         # print(f'封面URL: {data.get("cover_url", "")}')
-#         # print(f'视频集数： {len(data.get("videos", []))}')
+#         # print(f'视频集数： {len(data.get("videos", []))}')   
