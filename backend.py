@@ -1,6 +1,7 @@
 import os
 import re 
 import json
+import send2trash
 import bangumi_api
 
 #-------------------------------------------------------------------------------------------------------------------------
@@ -12,9 +13,9 @@ def scan_file(file):
 
     for root, dirs, files in os.walk(file):        #遍历指定目录及其子目录中的所有文件，返回当前目录路径、子目录和文件名称
         folder_name = os.path.basename(root)            #获取当前目录的名称
-
         aniname = name_convert(folder_name)                #调用上面的函数动画名称转换，获取干净的动画文件夹名称
-
+        anifolder_path=os.path.join(root)                   #拼接当前目录的完整路径
+        
         for f in files:                            #遍历每个文件
             if f.lower().endswith(video_types):    #检查文件是否是视频文件
               file_path = os.path.join(root, f)    #拼接文件的完整路径
@@ -41,6 +42,7 @@ def scan_file(file):
                     anime_data[aniname] ={                       #创造对应的键值对
                         'official_name': official_name,
                         'cover_url': cover_url,
+                        'folder_path': anifolder_path,
                         'videos': []
                     }
                 
@@ -140,30 +142,62 @@ def load_data():
     except FileNotFoundError:
         save_data({})   #如果json文件不存在，则调用save_data()函数创建一个空的json文件
         return {}
-    
     except json.JSONDecodeError:
         save_data({})   #如果json文件存在但内容无法解析，则调用save_data()函数重置为一个空的json文件
         return {}
     
 #-------------------------------------------------------------------------------------------------------------------------
 
+def delete_data(target):
+    # 删除指定动画的数据
+    try:                                                    
+        with open(Json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)  
+    except (FileNotFoundError, json.JSONDecodeError):
+        return False
+    
+    if target in data:                                          
+        folder_path = data.get(target, {}).get('folder_path', None)
+        
+        try:
+            # 1. 检查物理路径是否存在
+            if folder_path and os.path.exists(folder_path):
+                # 2. 规范化路径 (将 E:/a\b 变成 E:\a\b)，防止 Windows 底层 API 报错
+                normalized_path = os.path.normpath(folder_path)
+                send2trash.send2trash(normalized_path)
+            
+            # 3. 关键点：无论文件是不是已经被手动删除了，只要进到这里，
+            #    都必须把本地 JSON 数据里的记录抹掉，防止产生删不掉的幽灵数据！
+            del data[target]
+            save_data(data)
+            
+            return True
+        
+        except PermissionError:
+            print(f"\n[删除失败] 文件夹被占用！请检查是否还有播放器正在播放《{target}》？\n")
+            return False
+            
+        except Exception as e:
+            # 捕获异常并打印，拒绝“默默报错”
+            print(f"\n[删除异常] 删除 {target} 时发生错误: {str(e)}\n")
+            return False
+    
+    return False
 
 
-
-if __name__ == "__main__":  
-
-    input_file = r'E:\视频\Anime'
-
-    a=save_data(scan_file(input_file))
-
-    for folder_name,data in a.items():
-       print(f'番名: {data.get("official_name", folder_name)}')
+#-------------------------------------------------------------------------------------------------------------------------
 
 
+# if __name__ == "__main__":  
 
+#     input_file = r'E:\视频\Anime'
 
+#     a=save_data(scan_file(input_file))
 
+#     for folder_name,data in a.items():
+#        print(f'番名: {data.get("official_name", folder_name)}')
 
+    
 
 
 
@@ -191,4 +225,4 @@ if __name__ == "__main__":
 #         print(f'番名: {data.get("official_name", folder_name)}')  #优先显示官方名称，如果没有就显示文件夹名称
 
 #         # print(f'封面URL: {data.get("cover_url", "")}')
-#         # print(f'视频集数： {len(data.get("videos", []))}') 
+#         # print(f'视频集数： {len(data.get("videos", []))}')
